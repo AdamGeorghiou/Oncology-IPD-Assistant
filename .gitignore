@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.env
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Data
+data/projects/*.json
+data/uploads/*
+!data/examples/
+
+# macOS
+.DS_Store
