@@ -8,7 +8,7 @@ This document provides instructions for reproducing the evaluation results repor
 
 ### 1.1 Python Environment
 
-**Requirements:** Python 3.9+
+**Requirements:** Python 3.11+
 
 ```bash
 # Clone repository
