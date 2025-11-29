@@ -79,23 +79,30 @@ streamlit run app.py
 
 ```
 Oncology-IPD-Assistant/
-├── app.py                 # Main Streamlit application
+├── app.py                     # Main Streamlit application
 ├── src/
+│   ├── __init__.py
 │   └── core/
-│       ├── vision.py          # Axis detection and cropping
-│       ├── extractor.py       # Auto curve extraction
+│       ├── __init__.py
+│       ├── analysis.py            # Statistical analysis (Cox PH, Log-rank)
+│       ├── extractor.py           # Auto curve extraction
+│       ├── llm_bridge.py          # Gemini API integration
+│       ├── llm_extractor.py       # LLM-based curve extraction (experimental)
+│       ├── ocr_table.py           # At-risk table OCR + LLM
+│       ├── project_io.py          # Save/load functionality
+│       ├── reconstructor.py       # Guyot algorithm wrapper
 │       ├── seeded_extractor.py    # Click-based extraction
-│       ├── tracer.py          # Manual curve tracing
-│       ├── ocr_table.py       # At-risk table OCR + LLM
-│       ├── reconstructor.py   # Guyot algorithm wrapper
-│       ├── analysis.py        # Statistical analysis (Cox PH, Log-rank)
-│       ├── llm_bridge.py      # Gemini API integration
-│       └── project_io.py      # Save/load functionality
+│       ├── table_manager.py       # At-risk table UI management
+│       ├── tracer.py              # Manual curve tracing
+│       └── vision.py              # Axis detection and cropping
 ├── pages/
-│   └── LLM_Analysis.py    # Multi-trial comparison page
+│   └── 🤖_LLM_Analysis.py     # Multi-trial comparison page
 ├── data/
-│   ├── uploads/           # Uploaded images
-│   └── projects/          # Saved analyses
+│   ├── uploads/               # Uploaded images
+│   └── projects/              # Saved analyses
+├── .gitignore
+├── README.md
+├── REPRODUCTION.md
 └── requirements.txt
 ```
 
