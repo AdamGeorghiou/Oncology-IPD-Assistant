@@ -128,6 +128,10 @@ Reconstructed curves are validated against digitised input by calculating Mean A
 - **Two-arm comparison**: Statistical analysis currently supports pairwise comparisons
 - **Curve coverage**: At-risk data is auto-trimmed to match curve time range
 
+## Reproducing Results
+
+See [REPRODUCTION.md](REPRODUCTION.md) for detailed instructions.
+
 ## Citation
 
 If you use this tool in your research:
