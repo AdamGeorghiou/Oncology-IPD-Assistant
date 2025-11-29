@@ -11,7 +11,7 @@ Researchers conducting meta-analyses often only have access to published surviva
 ### 5-Step Pipeline
 
 1. **Ingest & Crop** - Upload KM curve image, auto-detect or manually crop plot area
-2. **Curve Extraction** - Extract survival curves via auto (color detection), seeded (click-based), or manual tracing
+2. **Curve Extraction** - Extract survival curves via auto (colour detection), seeded (click-based), or manual tracing
 3. **At-Risk Table** - Enter number-at-risk data via manual input, OCR, or Vision LLM extraction
 4. **Validation** - Reconstruct IPD using Guyot algorithm, validate against digitised curves (MAE), select reference arm for HR calculation
 5. **Analysis** - Cox PH, Log-rank test, median survival, forest plot, AI-powered interpretation
@@ -37,14 +37,15 @@ Researchers conducting meta-analyses often only have access to published surviva
 
 ### Prerequisites
 
-- Python 3.9+
-- R 4.0+ with `IPDfromKM` package installed
+- **Python 3.11 or higher** (tested on 3.11.x - earlier versions not supported)
+- R 4.0+
+- Google Gemini API key (for Vision LLM features)
 
 ### Setup
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/Oncology-IPD-Assistant.git
+git clone https://github.com/AdamGeorghiou/Oncology-IPD-Assistant.git
 cd Oncology-IPD-Assistant
 
 # Create virtual environment
@@ -130,7 +131,7 @@ Reconstructed curves are validated against digitised input by calculating Mean A
 
 ## Reproducing Results
 
-See [REPRODUCTION.md](REPRODUCTION.md) for detailed instructions.
+See [REPRODUCTION.md](REPRODUCTION.md) for detailed instructions on reproducing the evaluation results reported in the dissertation.
 
 ## Citation
 
@@ -147,10 +148,10 @@ reconstructing the data from published Kaplan-Meier survival curves.
 BMC Med Res Methodol. 2012;12:9.
 ```
 
-## License
+## Licence
 
-MIT License
+MIT Licence
 
 ## Author
 
-Adam Georghiou - MSc Data Science Dissertation Project
+Adam Georghiou - MSc Data Science Dissertation Project, University of Manchester

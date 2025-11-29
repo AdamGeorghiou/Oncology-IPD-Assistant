@@ -8,11 +8,11 @@ This document provides instructions for reproducing the evaluation results repor
 
 ### 1.1 Python Environment
 
-**Requirements:** Python 3.11+
+**Requirements:** Python 3.11+ (earlier versions not supported)
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/Oncology-IPD-Assistant.git
+git clone https://github.com/AdamGeorghiou/Oncology-IPD-Assistant.git
 cd Oncology-IPD-Assistant
 
 # Create virtual environment
@@ -41,7 +41,7 @@ library(IPDfromKM)
 
 ### 1.3 API Configuration (Optional)
 
-The AI-powered features (at-risk table extraction, clinical interpretation) require a Google Gemini API key:
+The AI-powered features (Vision LLM at-risk table extraction, clinical interpretation) require a Google Gemini API key:
 
 ```bash
 export GOOGLE_API_KEY="your-api-key-here"
@@ -79,7 +79,7 @@ The evaluation used Kaplan-Meier figures from three published Phase III oncology
 | DESTINY-Breast04 | Modi et al., NEJM 2022  | Figure 2A (OS)  |
 | CheckMate 816    | Forde et al., NEJM 2022 | Figure 2A (EFS) |
 
-Test figures are located in `data/test_figures/` (if included) or can be obtained from the original publications.
+Test figures can be obtained from the original publications via the New England Journal of Medicine.
 
 ### 3.2 Step-by-Step Reproduction
 
@@ -87,53 +87,57 @@ For each trial:
 
 1. **Step 1 (Ingest):** Upload the KM curve image and crop to isolate the plot area
 2. **Step 2 (Extract):** Use the appropriate extraction method:
-   - RELATIVITY-047: Seeded extraction (clear color separation)
-   - DESTINY-Breast04: Manual tracing (overlapping curves)
-   - CheckMate 816: Seeded extraction
-3. **Step 3 (At-Risk):** Enter the number-at-risk table from the figure
+   - RELATIVITY-047: Automatic extraction (clear colour separation)
+   - DESTINY-Breast04: Manual tracing (low contrast, similar colours)
+   - CheckMate 816: Manual tracing (partial auto extraction possible for orange arm)
+3. **Step 3 (At-Risk):** Enter the number-at-risk table using Vision LLM extraction (recommended) or manual entry
 4. **Step 4 (Validate):** Select reference arm and run reconstruction
 5. **Step 5 (Analyse):** Review statistical outputs
 
 ### 3.3 Expected Results
 
-#### RELATIVITY-047 (Melanoma, PFS)
+#### Curve Reconstruction Accuracy (MAE)
 
-| Metric          | Arm 1 (Rela-Nivo) | Arm 2 (Nivo) |
-| --------------- | ----------------- | ------------ |
-| Reconstructed n | 355               | 359          |
-| MAE             | < 2%              | < 2%         |
+| Trial            | Arm                      | MAE (%) | Accuracy |
+| ---------------- | ------------------------ | ------- | -------- |
+| RELATIVITY-047   | Relatlimab–nivolumab     | 0.29    | High     |
+| RELATIVITY-047   | Nivolumab                | 0.16    | High     |
+| DESTINY-Breast04 | Trastuzumab deruxtecan   | 0.16    | High     |
+| DESTINY-Breast04 | Physician's choice       | 0.22    | High     |
+| CheckMate 816    | Nivolumab + chemotherapy | 0.36    | High     |
+| CheckMate 816    | Chemotherapy alone       | 0.22    | High     |
 
-| Statistic    | Reconstructed | Published |
-| ------------ | ------------- | --------- |
-| Hazard Ratio | ~0.75         | 0.75      |
-| 95% CI       | ~0.62-0.92    | 0.62-0.92 |
-| p-value      | < 0.01        | 0.0055    |
+All arms achieved MAE well below the 2% threshold (mean 0.24%).
 
-#### DESTINY-Breast04 (Breast Cancer, OS)
+#### Clinical Statistics Agreement
 
-| Metric          | Arm 1 (T-DXd) | Arm 2 (Physician's Choice) |
-| --------------- | ------------- | -------------------------- |
-| Reconstructed n | 373           | 184                        |
-| MAE             | < 2%          | < 2%                       |
+| Trial            | Statistic            | Reconstructed | Published | Agreement           |
+| ---------------- | -------------------- | ------------- | --------- | ------------------- |
+| RELATIVITY-047   | Hazard Ratio         | 0.75          | 0.75      | Exact match         |
+|                  | 95% CI               | 0.59–0.94     | 0.62–0.92 | –                   |
+|                  | Cox p-value          | 0.012         | 0.006     | Both significant    |
+|                  | Median (Rela-nivo)   | 10.0 mo       | 10.1 mo   | Within tolerance    |
+|                  | Median (Nivo)        | 5.1 mo        | 4.6 mo    | Marginal (Δ 0.5 mo) |
+| DESTINY-Breast04 | Hazard Ratio         | 0.66          | 0.64      | Within tolerance    |
+|                  | 95% CI               | 0.52–0.84     | 0.49–0.84 | –                   |
+|                  | Cox p-value          | 0.0007        | 0.001     | Both significant    |
+|                  | Median (T-DXd)       | 19.3 mo       | 23.4 mo   | Δ 4.1 mo            |
+|                  | Median (Phys Choice) | 14.5 mo       | 16.8 mo   | Δ 2.3 mo            |
+| CheckMate 816    | Hazard Ratio         | 0.59          | 0.57      | Within tolerance    |
+|                  | 95% CI\*             | 0.39–0.88     | 0.30–1.07 | –                   |
+|                  | Cox p-value          | 0.009         | 0.008     | Both significant    |
+|                  | Median (Both)        | NR            | NR        | Match               |
 
-| Statistic    | Reconstructed | Published |
-| ------------ | ------------- | --------- |
-| Hazard Ratio | ~0.64         | 0.64      |
-| 95% CI       | ~0.49-0.84    | 0.49-0.84 |
-| p-value      | < 0.01        | 0.001     |
+\*Published CI was 99.67% per interim analysis plan; reconstructed CI is 95%.
 
-#### CheckMate 816 (Lung Cancer, EFS)
+#### At-Risk Table Extraction Accuracy
 
-| Metric          | Arm 1 (Nivo+Chemo) | Arm 2 (Chemo) |
-| --------------- | ------------------ | ------------- |
-| Reconstructed n | 179                | 179           |
-| MAE             | < 2%               | < 2%          |
-
-| Statistic    | Reconstructed | Published |
-| ------------ | ------------- | --------- |
-| Hazard Ratio | ~0.63         | 0.63      |
-| 95% CI       | ~0.43-0.91    | 0.43-0.91 |
-| p-value      | < 0.01        | 0.005     |
+| Trial            | Enhanced OCR | Vision LLM |
+| ---------------- | ------------ | ---------- |
+| RELATIVITY-047   | 95.5%        | 100%       |
+| DESTINY-Breast04 | ~71%         | 100%       |
+| CheckMate 816    | 97%          | 100%       |
+| **Overall**      | **~83%**     | **100%**   |
 
 ### 3.4 Saved Trial Data
 
@@ -143,6 +147,8 @@ Pre-extracted trial data (for verification) is stored in `data/projects/` as JSO
 - At-risk tables
 - Reconstructed IPD
 - Statistical outputs
+
+These can be loaded via the Knowledge Base sidebar in the application.
 
 ---
 
@@ -157,7 +163,7 @@ Oncology-IPD-Assistant/
 ├── src/
 │   └── core/
 │       ├── vision.py           # Axis detection and cropping
-│       ├── extractor.py        # Auto curve extraction (color-based)
+│       ├── extractor.py        # Auto curve extraction (colour-based)
 │       ├── seeded_extractor.py # Click-based curve extraction
 │       ├── tracer.py           # Manual curve tracing
 │       ├── ocr_table.py        # At-risk table OCR + Vision LLM
@@ -170,8 +176,7 @@ Oncology-IPD-Assistant/
 │   └── 🤖_LLM_Analysis.py      # Multi-trial comparison page
 └── data/
     ├── uploads/                # Uploaded images (temporary)
-    ├── projects/               # Saved analyses (JSON)
-    └── test_figures/           # Evaluation figures (if included)
+    └── projects/               # Saved analyses (JSON)
 ```
 
 ---
@@ -230,10 +235,10 @@ Quality thresholds:
 HR is calculated using Cox Proportional Hazards regression:
 
 ```
-HR = hazard(comparator) / hazard(reference)
+HR = hazard(experimental) / hazard(reference)
 ```
 
-The reference arm is user-selectable in Step 4 to ensure HR direction matches published convention.
+The reference arm is user-selectable in Step 4 to ensure HR direction matches published convention (HR < 1 indicates benefit for experimental arm).
 
 ---
 
@@ -267,6 +272,14 @@ Conversion rules for `rpy2.robjects` appear to be missing
 
 **Solution:** Wait 60 seconds (rate limit) or add billing to your Google Cloud project.
 
+### Python Version Errors
+
+```
+SyntaxError or ImportError on startup
+```
+
+**Solution:** Ensure you are using Python 3.11 or higher. Earlier versions (3.9, 3.10) may cause compatibility errors.
+
 ---
 
 ## 8. Citation
@@ -276,7 +289,7 @@ If reproducing this work, please cite:
 ```
 Georghiou, A. (2025). Oncology IPD Assistant: A Semi-Automated Pipeline for
 Reconstructing Individual Patient Data from Kaplan–Meier Survival Curves.
-MSc Data Science Dissertation, [University Name].
+MSc Data Science Dissertation, University of Manchester.
 ```
 
 And the underlying algorithm:
